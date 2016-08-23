@@ -16,14 +16,15 @@ minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt"
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Site Title"
+title                    : "Albert Thomas"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
-name                     : "Your Name"
-description              : "An amazing website."
-url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+name                     : "Albert Thomas"
+description              : "Personal page of Albert Thomas"
+url                      : "https://albertcthomas.github.io/"
+# url                      : "http://localhost:4000"
 baseurl                  : # the subpath of your site, e.g. "/blog"
-repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
+repository               : "albertcthomas/albertcthomas.github.io"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
@@ -84,7 +85,7 @@ naver_site_verification  :
 
 # Social Sharing
 twitter:
-  username               :
+  username               : "albertcthomas"
 facebook:
   username               :
   app_id                 :
@@ -99,7 +100,7 @@ social:
 
 # Analytics
 analytics:
-  provider               : false # false (default), "google", "google-universal", "custom"
+  provider               : "google-universal"
   google:
     tracking_id          :
     anonymize_ip         : # true, false (default)
@@ -107,53 +108,31 @@ analytics:
 
 # Site Author
 author:
-  name             : "Your Name"
-  avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "I am an **amazing** person."
-  location         : "Somewhere"
-  email            :
-  links:
+  name             : 
+  avatar           : "bio-photo.jpg"
+  bio              : "Research Engineer at Huawei Technologies"
+  location         :
+  email            : "albert.thomas@centraliens.net"
+    links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      # url: mailto:your.name@email.com
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      # url: "https://your-website.com"
+      url: mailto:albert.thomas@centraliens.net
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
-      # url: "https://twitter.com/"
-    - label: "Facebook"
-      icon: "fab fa-fw fa-facebook-square"
-      # url: "https://facebook.com/"
-    - label: "GitHub"
+      url: "https://twitter.com/albertcthomas"
+    - label: "Github"
       icon: "fab fa-fw fa-github"
-      # url: "https://github.com/"
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      # url: "https://instagram.com/"
+      url: "https://github.com/albertcthomas"
 
 # Site Footer
 footer:
   links:
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
-      # url:
-    - label: "Facebook"
-      icon: "fab fa-fw fa-facebook-square"
-      # url:
+      url: "https://twitter.com/albertcthomas"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      # url:
-    - label: "GitLab"
-      icon: "fab fa-fw fa-gitlab"
-      # url:
-    - label: "Bitbucket"
-      icon: "fab fa-fw fa-bitbucket"
-      # url:
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      # url:
-
+      url: "https://github.com/albertcthomas"
 
 # Reading Files
 include:
@@ -233,6 +212,8 @@ plugins:
   - jekyll-gist
   - jekyll-feed
   - jekyll-include-cache
+  - jemoji
+  - jekyll-seo-tag
 
 # mimic GitHub Pages with --safe
 whitelist:
@@ -293,3 +274,5 @@ defaults:
       comments: # true
       share: true
       related: true
+
+github: [metadata]
