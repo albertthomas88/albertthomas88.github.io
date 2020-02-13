@@ -109,11 +109,10 @@ analytics:
 # Site Author
 author:
   name             : 
-  avatar           : "bio-photo.jpg"
+  avatar           : "/assets/images/bio-photo.jpg"
   bio              : "Research Engineer at Huawei Technologies"
   location         :
-  email            : "albert.thomas@centraliens.net"
-    links:
+  links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
       url: mailto:albert.thomas@centraliens.net
