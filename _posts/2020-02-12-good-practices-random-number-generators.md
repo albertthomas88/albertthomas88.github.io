@@ -14,11 +14,11 @@ Finally, we want to be able to reproduce our results, for the sake of science bu
 -->
 
 ### The main messages
-1. Avoid using the global numpy RNG and hence avoid using [`np.random.seed`](https://numpy.org/doc/1.18/reference/random/generated/numpy.random.seed.html?highlight=numpy%20random%20seed#numpy.random.seed).
+1. Avoid using the global numpy RNG and hence avoid using [`np.random.seed`](https://numpy.org/doc/1.18/reference/random/generated/numpy.random.seed.html) or `np.random.*` functions to generate random values such as `np.random.rand`.
 2. Create a new RNG and pass it around using the [`np.random.default_rng`](https://numpy.org/doc/1.18/reference/random/generator.html?highlight=numpy%20random%20default_rng#numpy.random.default_rng) function.
 3. Be careful with parallel computations and rely on [numpy strategies for reproducible parallel number generation](https://numpy.org/doc/1.18/reference/random/parallel.html).
 
-Note that before numpy 1.17 the way to create a new RNG was to use `np.random.RandomState`. This is still how the global numpy RNG is created. This RNG is based on the Mersenne Twister 19937 algorithm. It is still possible to use this function in versions higher than 1.17 but it is now recommended to use `default_rng` which returns an instance of the statistically better PCG64 RNG.
+Note that before numpy 1.17 the way to create a new RNG was to use [`np.random.RandomState`](https://numpy.org/doc/1.18/reference/random/legacy.html#numpy.random.RandomState) which is based on the Mersenne Twister 19937 algorithm. This is also how the global numpy RNG is created. It is still possible to use this function in versions higher than 1.17 but it is now recommended to use `default_rng` which returns an instance of the statistically better PCG64 RNG.
 
 ## Random number generation with numpy
 When you import `numpy` in your python script a RNG is created behind the scenes. This RNG is the one used when you generate a new random value using a function such as `np.random.random`. I will here refer to this RNG as the global numpy RNG.
