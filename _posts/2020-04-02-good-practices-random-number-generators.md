@@ -94,7 +94,7 @@ By using a fixed seed you always get the same results and by using `SeedSequence
 ### Numpy RNGs
 * [The documentation of the numpy random module](https://numpy.org/doc/1.18/reference/random/index.html) is the best place to find information and where I found most of the information that I shared here.
 * [The Numpy Enhancement Proposal (NEP) 19 on the Random Number Generator Policy](https://numpy.org/neps/nep-0019-rng-policy.html) which lead to the changes introduced in numpy 1.17
-* A [recent numpy issue](https://github.com/numpy/numpy/issues/15322) about the `check_random_state` and RNG good practices, especially [this comment](https://github.com/numpy/numpy/issues/15322#issuecomment-573890207) by Robert Kern.
+* A [recent numpy issue](https://github.com/numpy/numpy/issues/15322) about the `check_random_state` function and RNG good practices, especially [this comment](https://github.com/numpy/numpy/issues/15322#issuecomment-573890207) by Robert Kern.
 * [How do I set a random_state for an entire execution?](https://scikit-learn.org/stable/faq.html#how-do-i-set-a-random-state-for-an-entire-execution) from the scikit-learn FAQ.
 
 ### RNGs in general
