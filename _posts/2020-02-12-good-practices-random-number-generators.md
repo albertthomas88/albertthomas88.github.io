@@ -5,16 +5,10 @@ title: Good practices with numpy random number generators
 excerpt_separator: <!--more-->
 ---
 
-Unless you are working on a problem where you can afford a true Random Number Generator (RNG), implementing something random means relying on a pseudo Random Number Generator. I want to share here what I have learnt about how to properly use a pseudo RNG and especially the ones available in [numpy](https://numpy.org/). <!--more--> I assume a certain knowledge of numpy and that numpy 1.17 or greater is used. The reason for this is that great new features were introduced in the [random](https://numpy.org/doc/1.18/reference/random/index.html) module in version 1.17. As `numpy` is usually imported as `np`, I will sometimes use `np` instead of `numpy`. Finally, as I will not talk about true RNGs, RNG will always mean pseudo RNG in the rest of this blog post.
-
-<!---
-A lot of computation in machine learning rely on randomness, including data generation, data preprocessing, cross-validation, optimization algorithms such as stochastic gradient descent, random initialization (for instance for neural networks). One also wants to know whether his results hold independently of this randomness. Specifically, the results will most likely be true on average or with great probability. To assess the performance of his algorithm or idea, one usually repeats the experiment several times.
-
-Finally, we want to be able to reproduce our results, for the sake of science but also more simply for the sake of our jobs of debuggers.
--->
+Unless you are working on a problem where you can afford a true Random Number Generator (RNG), which is basically never for most of us, implementing something random means relying on a pseudo Random Number Generator. I want to share here what I have learnt about how to properly use a pseudo RNG and especially the ones available in [numpy](https://numpy.org/). <!--more--> I assume a certain knowledge of numpy and that numpy 1.17 or greater is used. The reason for this is that great new features were introduced in the [random](https://numpy.org/doc/1.18/reference/random/index.html) module of version 1.17. As `numpy` is usually imported as `np`, I will sometimes use `np` instead of `numpy`. Finally, as I will not talk about true RNGs, RNG will always mean pseudo RNG in the rest of this blog post.
 
 ### The main messages
-1. Avoid using the global numpy RNG and hence avoid using [`np.random.seed`](https://numpy.org/doc/1.18/reference/random/generated/numpy.random.seed.html) or `np.random.*` functions to generate random values such as `np.random.rand`.
+1. Avoid using the global numpy RNG. This means that you should avoid using[`np.random.seed`](https://numpy.org/doc/1.18/reference/random/generated/numpy.random.seed.html) and `np.random.*` functions, such as `np.random.random`, to generate random values.
 2. Create a new RNG and pass it around using the [`np.random.default_rng`](https://numpy.org/doc/1.18/reference/random/generator.html?highlight=numpy%20random%20default_rng#numpy.random.default_rng) function.
 3. Be careful with parallel computations and rely on [numpy strategies for reproducible parallel number generation](https://numpy.org/doc/1.18/reference/random/parallel.html).
 
@@ -54,12 +48,9 @@ def stochastic_function(seed, high=10):
     rng = default_rng(seed)
     return rng.integers(high, size=5)
 ```
-You can either pass a fixed seed or your already created RNG to this function. To be perfectly exact, the `default_rng` function returns the exact same RNG passed to it for certain kind of RNGs such at the ones created with `default_rng` itself. You can refer to the [`default_rng` documentation](https://numpy.org/doc/1.18/reference/random/generator.html#numpy.random.default_rng) for more details on the arguments that you can pass to this function. You can also pass a `SeedSequence` instance. More on this below. 
+You can either pass a fixed seed or your already created RNG to this function. To be perfectly exact, the `default_rng` function returns the exact same RNG passed to it for certain kind of RNGs such at the ones created with `default_rng` itself. You can refer to the [`default_rng` documentation](https://numpy.org/doc/1.18/reference/random/generator.html#numpy.random.default_rng) for more details on the arguments that you can pass to this function.
 
-Before knowing about `default_rng`, and before numpy 1.17, I was using the scikit-learn function [`sklearn.utils.check_random_state`](https://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html) which is of course heavily used in the scikit-learn codebase. While writing this post I discovered that this function is now available in [scipy](https://github.com/scipy/scipy/blob/master/scipy/_lib/_util.py#L173). A look at the docstring and/or the source code of this function will give you a good idea about what it does. The only difference with `default_rng` is that when `None` is passed to `check_random_state` then the function returns the already existing global numpy RNG. This can be convenient because if you fixed the seed before in your script using `np.random.seed`, the function returns the generator that was seeded at the beginning of the script. However, as explained above, this is not the recommended practice and you should be aware of the risks and the side effects.
-
-**add note on new API, use default_rng, Generator, instead of np.random.RandomState**
-
+Before knowing about `default_rng`, and before numpy 1.17, I was using the scikit-learn function [`check_random_state`](https://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html) which is of course heavily used in the scikit-learn codebase. While writing this post I discovered that this function is now available in [scipy](https://github.com/scipy/scipy/blob/master/scipy/_lib/_util.py#L173). A look at the docstring and/or the source code of this function will give you a good idea about what it does. The only difference with `default_rng` is that when `None` is passed to `check_random_state` then the function returns the already existing global numpy RNG. This can be convenient because if you fixed the seed before in your script using `np.random.seed`, the function returns the generator that was seeded at the beginning of the script. However, as explained above, this is not the recommended practice and you should be aware of the risks and the side effects.
 
 ## Parallel processing
 
@@ -85,16 +76,18 @@ ss = SeedSequence(seed)
 # create 5 child SeedSequences, one for each process.
 child_states = ss.spawn(5)
 
+# use 2 processes to run the stochastic_function 5 times with joblib
 random_vector = Parallel(n_jobs=2)(delayed(
     stochastic_function)(random_state) for random_state in child_states)
 print(random_vector)
 
+# rerun to check that we obtain the same outputs
 random_vector = Parallel(n_jobs=2)(delayed(
     stochastic_function)(random_state) for random_state in child_states)
 print(random_vector)
 ```
 
-By using a fixed random state you always get the same results and by using `SeedSequence.spawn` you have an independent RNG for each of the processes. Note that I also used the convenient `default_rng` function in `stochastic_function`.
+By using a fixed seed you always get the same results and by using `SeedSequence.spawn` you have an independent RNG for each of the processes. Note that I also used the convenient `default_rng` function in `stochastic_function`.
 
 ## Resources
 
