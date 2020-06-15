@@ -21,7 +21,7 @@ title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Albert Thomas"
 description              : "Personal page of Albert Thomas"
-url                      : "https://albertcthomas.github.io/"
+url                      : "https://albertcthomas.github.io"
 # url                      : "http://localhost:4000"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "albertcthomas/albertcthomas.github.io"
