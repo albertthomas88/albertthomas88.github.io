@@ -8,11 +8,11 @@ excerpt_separator: <!--more-->
 Unless you are working on a problem where you can afford a true Random Number Generator (RNG), which is basically never for most of us, implementing something random means relying on a pseudo Random Number Generator. I want to share here what I have learnt about good practices with pseudo RNGs and especially the ones available in [numpy](https://numpy.org/). <!--more--> I assume a certain knowledge of numpy and that numpy 1.17 or greater is used. The reason for this is that great new features were introduced in the [random](https://numpy.org/doc/1.18/reference/random/index.html) module of version 1.17. As `numpy` is usually imported as `np`, I will sometimes use `np` instead of `numpy`. Finally, as I will not talk about true RNGs, RNG will always mean pseudo RNG in the rest of this blog post.
 
 ### The main messages
-1. Avoid using the global numpy RNG. This means that you should avoid using [`np.random.seed`](https://numpy.org/doc/1.18/reference/random/generated/numpy.random.seed.html) and `np.random.*` functions, such as [`np.random.random`](https://numpy.org/doc/1.18/reference/random/generated/numpy.random.random.html#numpy-random-random), to generate random values.
+1. Avoid using the global numpy RNG. This means that you should avoid using [`np.random.seed`](https://numpy.org/doc/1.18/reference/random/generated/numpy.random.seed.html) and `np.random.*` functions, such as `np.random.random`, to generate random values.
 2. Create a new RNG and pass it around using the [`np.random.default_rng`](https://numpy.org/doc/1.18/reference/random/generator.html#numpy.random.default_rng) function.
 3. Be careful with parallel computations and rely on [numpy strategies for reproducible parallel number generation](https://numpy.org/doc/1.18/reference/random/parallel.html).
 
-Note that before numpy 1.17 the way to create a new RNG was to use [`np.random.RandomState`](https://numpy.org/doc/1.18/reference/random/legacy.html#numpy.random.RandomState) which is based on the popular Mersenne Twister 19937 algorithm. This is also how the global numpy RNG is created. It is still possible to use this function in versions higher than 1.17 but it is now recommended to use `default_rng` which returns an instance of the statistically better [PCG64](https://www.pcg-random.org) RNG.
+Note that with numpy <1.17 the way to create a new RNG is to use [`np.random.RandomState`](https://numpy.org/doc/1.18/reference/random/legacy.html#numpy.random.RandomState) which is based on the popular Mersenne Twister 19937 algorithm. This is also how the global numpy RNG is created. It is still possible to use this function in versions higher than 1.17 but it is now recommended to use `default_rng` which returns an instance of the statistically better [PCG64](https://www.pcg-random.org) RNG.
 
 ## Random number generation with numpy
 When you import `numpy` in your python script a RNG is created behind the scenes. This RNG is the one used when you generate a new random value using a function such as `np.random.random`. I will here refer to this RNG as the global numpy RNG.
@@ -25,7 +25,7 @@ In short:
 * Instead of using `np.random.seed`, which reseeds the already created global numpy RNG and then using `np.random.*` functions you should create a new RNG.
 * You should create one RNG at the beginning of your script (with a seed if you want reproducibility) and use this RNG in the rest of your script.
 
-To create a new RNG you can use the [`default_rng`](https://numpy.org/doc/1.18/reference/random/generator.html#numpy.random.default_rng) function as illustrated in the [introduction of the random module documentation](https://numpy.org/doc/1.18/reference/random/index.html#introduction):
+To create a new RNG you can use the `default_rng` function as illustrated in the [introduction of the random module documentation](https://numpy.org/doc/1.18/reference/random/index.html#introduction):
 
 ```python
 import numpy as np
@@ -39,7 +39,7 @@ The reason for seeding your RNG only once is that you can loose on the randomnes
 
 ## Passing a numpy RNG around
 
-As you write functions that you will use on their own as well as in a more complex script it is convenient to be able to pass a seed or your already created RNG. The function [`default_rng`](https://numpy.org/doc/1.18/reference/random/generator.html#numpy.random.default_rng) allows you to do this very easily. As written above, this function can be used to create a new RNG from your chosen seed, if you pass a seed to it, or from system entropy when passing `None` but you can also pass an already created RNG. In this case the returned RNG is the one that you passed.
+As you write functions that you will use on their own as well as in a more complex script it is convenient to be able to pass a seed or your already created RNG. The function `default_rng` allows you to do this very easily. As written above, this function can be used to create a new RNG from your chosen seed, if you pass a seed to it, or from system entropy when passing `None` but you can also pass an already created RNG. In this case the returned RNG is the one that you passed.
 
 ```python
 import numpy as np
@@ -60,7 +60,7 @@ Let's consider the context of Monte Carlo simulation: you have a random function
 
 If you fix the seed at the beginning of your main script for reproducibility and then pass the same RNG to each process to be run in parallel, most of the time this will not give you what you want as this RNG will be deep copied. The same results will thus be produced by each process. One of the solutions is to create as many RNGs as parallel processes with a different seed for each of these RNGs. The issue now is that you cannot choose the seeds as easily as you would think. When you choose two different seeds to instantiate two different RNGs how do you know that the numbers produced by these RNGs will appear as statistically independent? The design of independent RNGs for parallel processes has been an important research question. You can for instance refer to the paper [Random numbers for parallel computers: Requirements and methods, with emphasis on GPUs](https://www.sciencedirect.com/science/article/pii/S0378475416300829) by L'Ecuyer et al. (2017) for a good summary of the different methods on this topic.
 
-From numpy 1.17, it is now very easy to instantiate independent RNGs. Depending on the RNG that you use, different strategies are easily available as documented in the [Parallel random number generation section](https://numpy.org/doc/1.18/reference/random/parallel.html) of the numpy documentation. One of the strategies is to use `SeedSequence` which is an algorithm that makes sure that a not so good user-provided seed results in a good initial state for the RNG. Additionally, it ensures that two close seeds will result in two very different initial states for the RNG that are, with very high probability, independent of each other. You can refer to the documentation of [SeedSequence Spawning](https://numpy.org/doc/1.18/reference/random/parallel.html#seedsequence-spawning) for an example on how to generate independent RNGs from a user-provided seed. I here provide an example illustrating how to use this with the [joblib example](https://joblib.readthedocs.io/en/latest/auto_examples/parallel_random_state.html#fixing-the-random-state-to-obtain-deterministic-results) mentioned above.
+From numpy 1.17, it is now very easy to instantiate independent RNGs. Depending on the RNG that you use, different strategies are easily available as documented in the [Parallel random number generation section](https://numpy.org/doc/1.18/reference/random/parallel.html) of the numpy documentation. One of the strategies is to use `SeedSequence` which is an algorithm that makes sure that a not so good user-provided seed results in a good initial state for the RNG. Additionally, it ensures that two close seeds will result in two very different initial states for the RNG that are, with very high probability, independent of each other. You can refer to the documentation of [SeedSequence Spawning](https://numpy.org/doc/1.18/reference/random/parallel.html#seedsequence-spawning) for an example on how to generate independent RNGs from a user-provided seed. I here show how you can do this from an already existing RNG and apply it to the [joblib example](https://joblib.readthedocs.io/en/latest/auto_examples/parallel_random_state.html#fixing-the-random-state-to-obtain-deterministic-results) mentioned above.
 
 
 ```python
@@ -72,7 +72,10 @@ def stochastic_function(seed, high=10):
     return rng.integers(high, size=5)
 
 seed = 98765
-ss = np.random.SeedSequence(seed)
+# create the RNG that you want to pass around
+rng = np.random.default_rng(seed)
+# get the SeedSequence of the passed RNG
+ss = rng.bit_generator._seed_seq
 # create 5 initial independent states
 child_states = ss.spawn(5)
 
@@ -87,7 +90,7 @@ random_vector = Parallel(n_jobs=2)(delayed(
 print(random_vector)
 ```
 
-By using a fixed seed you always get the same results and by using `SeedSequence.spawn` you have an independent RNG for each of the iterations. Note that I also used the convenient `default_rng` function in `stochastic_function`.
+By using a fixed seed you always get the same results and by using `SeedSequence.spawn` you have an independent RNG for each of the iterations. Note that I used the convenient `default_rng` function in `stochastic_function`. You can also see that the `SeedSequence` of the existing RNG is a private attribute. Accessing the `SeedSequence` might become easier in future versions of numpy (more information [here](https://github.com/numpy/numpy/issues/15322#issuecomment-626400433)).
 
 ## Resources
 
